@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SpectraPick — Find Your Perfect Device</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   RESET & ROOT
+══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c0e;
+  --surface:#141416;
+  --card:#1a1a1e;
+  --border:#2c2c32;
+  --accent:#ff4d00;
+  --accent2:#ff7733;
+  --text:#f5f5f0;
+  --muted:#888890;
+  --success:#00c896;
+  --radius:4px;
+  --radius-md:8px;
+  --radius-lg:12px;
+  --font-d:'Barlow Condensed',sans-serif;
+  --font-b:'Barlow',sans-serif;
+  --tr:.22s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"]{
+  --bg:#f2f2ee;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --border:#e0e0d8;
+  --text:#0e0e10;
+  --muted:#666670;
+}
+html,body{height:100%;width:100%;overflow:hidden}
+body{font-family:var(--font-b);background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+button{cursor:pointer;font-family:var(--font-b);border:none;background:none;color:inherit}
+input{font-family:var(--font-b)}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ══════════════════════════════════════════
+   SCREENS
+══════════════════════════════════════════ */
+.screen{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transform:translateY(14px);
+  transition:opacity .32s ease,transform .32s ease;
+  background:var(--bg);z-index:1;
+}
+.screen.on{opacity:1;pointer-events:all;transform:translateY(0)}
+
+/* ══════════════════════════════════════════
+   AUTH SCREEN  — full-bleed bold design
+══════════════════════════════════════════ */
+#s-auth{
+  flex-direction:row;overflow:hidden;
+}
+/* Left panel — brand/hero */
+.auth-hero{
+  flex:1;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:3rem;
+  background:#0c0c0e;
+  min-height:100%;
+}
+.auth-hero-bg{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(160deg,rgba(255,77,0,.18) 0%,transparent 50%),
+    linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 60%);
+  z-index:1;
+}
+/* Animated grid lines */
+.auth-hero-grid{
+  position:absolute;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(255,77,0,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,77,0,.07) 1px,transparent 1px);
+  background-size:60px 60px;
+  animation:gridScroll 20s linear infinite;
+}
+@keyframes gridScroll{
+  0%{background-position:0 0}
+  100%{background-position:60px 60px}
+}
+/* Diagonal accent stripe */
+.auth-hero::before{
+  content:'';position:absolute;
+  top:-80px;right:-60px;
+  width:320px;height:800px;
+  background:linear-gradient(to bottom,var(--accent),transparent);
+  opacity:.12;
+  transform:rotate(-15deg);
+  z-index:0;
+}
+.auth-hero-content{position:relative;z-index:2}
+.auth-brand{
+  font-family:var(--font-d);font-size:3.8rem;font-weight:900;
+  letter-spacing:-.02em;line-height:.9;
+  color:#fff;text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.auth-brand em{color:var(--accent);font-style:normal;display:block}
+.auth-brand-line{
+  display:block;font-size:.75rem;font-weight:600;letter-spacing:.35em;
+  color:var(--accent);text-transform:uppercase;margin-bottom:.6rem;
+}
+.auth-hero-desc{
+  font-size:.9rem;color:rgba(255,255,255,.5);
+  max-width:300px;line-height:1.6;font-weight:300;
+}
+/* Stats row */
+.auth-stats{
+  display:flex;gap:2rem;margin-top:2rem;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:1.5rem;
+}
+.auth-stat-n{font-family:var(--font-d);font-size:2.2rem;font-weight:800;color:var(--accent)}
+.auth-stat-l{font-size:.72rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-top:.1rem}
+
+/* Right panel — form */
+.auth-form-panel{
+  width:420px;flex-shrink:0;
+  background:var(--surface);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:3rem 2.5rem;
+  border-left:1px solid var(--border);
+  overflow-y:auto;
+}
+.auth-form-title{
+  font-family:var(--font-d);font-size:2rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.02em;margin-bottom:.3rem;
+}
+.auth-form-sub{font-size:.83rem;color:var(--muted);margin-bottom:2rem}
+.tab-row{display:flex;gap:3px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:4px;margin-bottom:1.75rem}
+.atab{flex:1;padding:.55rem;border-radius:var(--radius);text-align:center;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all var(--tr);text-transform:uppercase;letter-spacing:.06em}
+.atab.on{background:var(--accent);color:#fff}
+.fpanel{display:none}
+.fpanel.on{display:block}
+.fg{margin-bottom:1.1rem}
+.fg label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.45rem}
+.fg input{
+  width:100%;padding:.8rem 1rem;
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:var(--radius-md);color:var(--text);font-size:.93rem;
+  transition:border-color var(--tr);
+}
+.fg input:focus{border-color:var(--accent);outline:none}
+.ferr{color:#ff4d4d;font-size:.74rem;margin-top:.3rem;min-height:.9rem;display:block}
+.gerr{color:#ff4d4d;font-size:.78rem;margin-bottom:.75rem;min-height:1rem;text-align:center}
+.btn-main{
+  display:block;width:100%;padding:.9rem;margin-top:.75rem;
+  background:var(--accent);color:#fff;
+  font-family:var(--font-d);font-size:1rem;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;
+  border-radius:var(--radius-md);cursor:pointer;border:none;
+  transition:all var(--tr);position:relative;overflow:hidden;
+}
+.btn-main::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);
+  transform:translateX(-100%);transition:transform .5s ease;
+}
+.btn-main:hover::after{transform:translateX(100%)}
+.btn-main:hover{background:#e64400;transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,77,0,.35)}
+.btn-main:active{transform:translateY(0)}
+
+/* Mobile auth fallback */
+@media(max-width:700px){
+  #s-auth{flex-direction:column}
+  .auth-hero{min-height:38vh;flex:none}
+  .auth-form-panel{width:100%;flex:1;padding:2rem 1.5rem}
+  .auth-brand{font-size:2.8rem}
+}
+
+/* ══════════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════════ */
+#s-app{flex-direction:column}
+
+/* ── TOPNAV ── */
+.topnav{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;height:56px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  z-index:100;position:relative;
+}
+/* left accent bar */
+.topnav::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--accent);
+}
+.nav-logo{
+  font-family:var(--font-d);font-size:1.35rem;font-weight:900;
+  letter-spacing:.04em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.3rem;padding-left:.6rem;
+}
+.nav-logo em{color:var(--accent);font-style:normal}
+.nav-logo-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);flex-shrink:0;
+  box-shadow:0 0 8px var(--accent);
+}
+.nav-r{display:flex;align-items:center;gap:.6rem}
+.iBtn{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  font-size:.95rem;cursor:pointer;transition:all var(--tr);
+}
+.iBtn:hover{border-color:var(--accent);color:var(--accent)}
+.ava{
+  width:36px;height:36px;border-radius:var(--radius);
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-d);font-weight:900;font-size:.95rem;color:#fff;
+  cursor:pointer;border:none;transition:all var(--tr);
+}
+.ava:hover{background:#e64400;transform:scale(1.05)}
+
+/* ── SEARCH ── */
+.search-wrap{
+  flex-shrink:0;padding:.75rem 1.5rem .4rem;position:relative;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.search-wrap input{
+  width:100%;padding:.65rem 1rem .65rem 2.6rem;
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:var(--radius);color:var(--text);font-size:.875rem;
+  transition:border-color var(--tr);letter-spacing:.01em;
+}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-wrap input:focus{border-color:var(--accent);outline:none}
+.sico{position:absolute;left:2.2rem;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.45;font-size:.9rem}
+
+/* ── SCROLL BODY ── */
+.app-scroll{flex:1;overflow-y:auto;padding:0 0 5rem}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.on{display:block}
+
+/* ── BOTTOM NAV ── */
+.bot-nav{
+  flex-shrink:0;display:flex;
+  background:var(--surface);border-top:1px solid var(--border);
+  z-index:50;
+}
+.bn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:.5rem .25rem calc(.5rem + env(safe-area-inset-bottom));
+  gap:.15rem;font-size:.62rem;font-weight:700;color:var(--muted);
+  cursor:pointer;transition:color var(--tr);text-transform:uppercase;letter-spacing:.06em;
+}
+.bn .bico{font-size:1.2rem;transition:transform var(--tr)}
+.bn.on{color:var(--accent)}
+.bn.on .bico{transform:scale(1.15)}
+
+/* ══════════════════════════════════════════
+   HOME VIEW — fitness-inspired hero
+══════════════════════════════════════════ */
+#v-home{padding:0}
+
+/* HERO */
+.hero{
+  position:relative;height:72vh;min-height:420px;max-height:600px;
+  overflow:hidden;display:flex;align-items:flex-end;
+  background:#080808;
+}
+/* Photo background with dark overlay */
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background-image:url('https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=1400&q=80&fit=crop');
+  background-size:cover;
+  background-position:center 30%;
+}
+/* Dark overlay so text stays readable */
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(to right, rgba(0,0,0,.85) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.3) 100%),
+    linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 50%);
+}
+/* Subtle orange tint overlay */
+.hero-bg::before{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse at 30% 60%, rgba(255,77,0,.15) 0%, transparent 60%);
+}
+/* Content */
+.hero-content{
+  position:relative;z-index:3;
+  padding:2.5rem 2rem 2.5rem 2.5rem;
+  width:100%;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.72rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:1rem;
+}
+.hero-eyebrow::before{content:'';display:block;width:24px;height:2px;background:var(--accent)}
+.hero-title{
+  font-family:var(--font-d);font-size:clamp(3rem,8vw,5.5rem);
+  font-weight:900;line-height:.92;letter-spacing:-.02em;
+  text-transform:uppercase;color:#fff;margin-bottom:1.2rem;
+}
+.hero-title em{color:var(--accent);font-style:normal;display:block}
+.hero-sub{
+  font-size:.9rem;color:rgba(255,255,255,.5);
+  max-width:380px;line-height:1.6;font-weight:300;margin-bottom:1.8rem;
+}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:.8rem;
+  padding:.8rem 1.8rem;
+  border:2px solid var(--accent);
+  color:#fff;
+  font-family:var(--font-d);font-size:.85rem;font-weight:800;
+  letter-spacing:.15em;text-transform:uppercase;
+  cursor:pointer;transition:all var(--tr);
+  position:relative;overflow:hidden;background:transparent;
+}
+.hero-cta::before{
+  content:'';position:absolute;inset:0;
+  background:var(--accent);
+  transform:translateX(-101%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:0;
+}
+.hero-cta:hover::before{transform:translateX(0)}
+.hero-cta:hover{color:#fff}
+.hero-cta span{position:relative;z-index:1}
+.hero-cta-arrow{position:relative;z-index:1;transition:transform var(--tr)}
+.hero-cta:hover .hero-cta-arrow{transform:translateX(4px)}
+/* Dots */
+.hero-dots{
+  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:.5rem;z-index:3;
+}
+.hero-dot{width:20px;height:3px;background:rgba(255,255,255,.25);transition:all var(--tr)}
+.hero-dot.on{background:var(--accent);width:32px}
+
+/* CATEGORIES SECTION */
+.cats-section{padding:2rem 1.5rem 1.5rem}
+.section-eyebrow{
+  display:flex;align-items:center;gap:.75rem;
+  font-size:.7rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;
+}
+.section-eyebrow::after{content:'';flex:1;height:1px;background:var(--border)}
+.section-title{
+  font-family:var(--font-d);font-size:1.9rem;font-weight:900;
+  text-transform:uppercase;letter-spacing:.02em;margin-bottom:1.5rem;
+}
+.section-title em{color:var(--accent);font-style:normal}
+
+/* Category cards — horizontal numbered list style inspired by reference */
+.cat-list{display:grid;gap:.6rem}
+.cat-item{
+  display:flex;align-items:center;gap:1.25rem;
+  background:var(--card);border:1px solid var(--border);
+  padding:.9rem 1.25rem;
+  cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+  border-radius:var(--radius);
+}
+.cat-item::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:var(--accent);transition:width .3s cubic-bezier(.4,0,.2,1);
+}
+.cat-item:hover::before{width:3px}
+.cat-item:hover{border-color:rgba(255,77,0,.4);transform:translateX(3px);
+  background:rgba(255,77,0,.04)}
+.cat-num{
+  font-family:var(--font-d);font-size:1.5rem;font-weight:900;
+  color:var(--accent);opacity:.7;flex-shrink:0;width:2.2rem;
+  line-height:1;
+}
+.cat-divider{width:1px;height:2.2rem;background:var(--border);flex-shrink:0}
+.cat-ico{font-size:1.5rem;flex-shrink:0}
+.cat-info{flex:1}
+.cat-name{
+  font-family:var(--font-d);font-size:1.1rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.04em;line-height:1;
+}
+.cat-cnt{font-size:.7rem;color:var(--muted);margin-top:.15rem;font-weight:500}
+.cat-arrow{
+  font-size:1.1rem;color:var(--muted);transition:all var(--tr);flex-shrink:0;
+}
+.cat-item:hover .cat-arrow{color:var(--accent);transform:translateX(4px)}
+
+/* ══════════════════════════════════════════
+   QUIZ VIEW
+══════════════════════════════════════════ */
+#v-quiz{padding:1.25rem 1.5rem 2rem}
+.quiz-back{
+  display:inline-flex;align-items:center;gap:.45rem;
+  color:var(--muted);font-size:.8rem;font-weight:600;
+  cursor:pointer;margin-bottom:1rem;transition:color var(--tr);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.quiz-back:hover{color:var(--accent)}
+.prog-bar{height:3px;background:var(--border);margin-bottom:.4rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);transition:width .5s cubic-bezier(.4,0,.2,1)}
+.prog-lbl{font-size:.7rem;color:var(--muted);margin-bottom:1.1rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.quiz-card{
+  background:var(--card);border:1px solid var(--border);
+  padding:1.5rem;animation:fadeUp .3s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.quiz-cat-tag{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.75rem;
+}
+.quiz-q{
+  font-family:var(--font-d);font-size:1.4rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.02em;margin-bottom:.2rem;line-height:1.1;
+}
+.quiz-hint{font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;font-weight:400}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:.55rem}
+.opt{
+  padding:.85rem 1rem;background:var(--surface);
+  border:1.5px solid var(--border);
+  text-align:left;color:var(--text);font-size:.85rem;font-weight:500;
+  cursor:pointer;transition:all var(--tr);font-family:var(--font-b);
+  position:relative;overflow:hidden;
+}
+.opt::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:var(--accent);transition:width .25s ease;
+}
+.opt:hover::before,.opt.picked::before{width:2px}
+.opt:hover{border-color:rgba(255,77,0,.5);background:rgba(255,77,0,.05)}
+.opt.picked{border-color:var(--accent);background:rgba(255,77,0,.08);color:#fff;font-weight:600}
+.q-nav{display:flex;justify-content:space-between;gap:.6rem;margin-top:1.1rem}
+.btn-sec{
+  padding:.65rem 1.25rem;background:var(--surface);
+  border:1.5px solid var(--border);
+  font-size:.8rem;font-weight:700;transition:all var(--tr);cursor:pointer;
+  color:var(--text);text-transform:uppercase;letter-spacing:.06em;
+}
+.btn-sec:hover{border-color:var(--accent);color:var(--accent)}
+.btn-nxt{
+  padding:.65rem 1.5rem;background:var(--accent);color:#fff;
+  font-size:.8rem;font-weight:800;font-family:var(--font-d);
+  letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;
+  transition:all var(--tr);
+}
+.btn-nxt:hover{background:#e64400;box-shadow:0 4px 16px rgba(255,77,0,.4);transform:translateY(-1px)}
+.btn-nxt:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ══════════════════════════════════════════
+   RESULTS VIEW
+══════════════════════════════════════════ */
+#v-results{padding:1.25rem 1.5rem 2rem}
+.results-hd{margin-bottom:.75rem}
+.results-hd h2{
+  font-family:var(--font-d);font-size:1.5rem;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.results-sub{font-size:.75rem;color:var(--muted);font-weight:500;margin-top:.15rem}
+.filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem;margin-top:.6rem}
+.fbtn{
+  padding:.35rem .85rem;
+  background:var(--surface);border:1.5px solid var(--border);
+  color:var(--muted);font-size:.72rem;font-weight:700;cursor:pointer;
+  transition:all var(--tr);text-transform:uppercase;letter-spacing:.06em;
+}
+.fbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.dev-list{display:grid;gap:.65rem}
+
+/* Device Card */
+.dc{
+  background:var(--card);border:1px solid var(--border);
+  padding:1rem;display:grid;grid-template-columns:64px 1fr auto;
+  gap:.85rem;align-items:start;cursor:pointer;transition:all .25s ease;
+  position:relative;overflow:hidden;
+}
+.dc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent);transition:width .25s ease}
+.dc:hover::before{width:3px}
+.dc:hover{border-color:rgba(255,77,0,.35);transform:translateX(3px)}
+.dc-badge{
+  position:absolute;top:.7rem;right:.7rem;
+  background:var(--accent);color:#fff;
+  font-size:.58rem;font-weight:800;padding:.2rem .5rem;
+  font-family:var(--font-d);letter-spacing:.1em;text-transform:uppercase;
+}
+.dc-thumb{
+  width:64px;height:64px;background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;
+}
+.dc-name{
+  font-family:var(--font-d);font-size:1rem;font-weight:800;
+  letter-spacing:.02em;text-transform:uppercase;margin-bottom:.15rem;line-height:1.1;
+}
+.dc-tag{font-size:.73rem;color:var(--muted);margin-bottom:.5rem;font-weight:400}
+.dc-specs{display:flex;flex-wrap:wrap;gap:.3rem}
+.spec-pill{
+  background:var(--surface);border:1px solid var(--border);
+  padding:.15rem .45rem;font-size:.65rem;color:var(--muted);font-weight:500;
+}
+.match{font-size:.67rem;color:var(--success);font-weight:700;margin-top:.35rem;text-transform:uppercase;letter-spacing:.05em}
+.dc-r{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;flex-shrink:0}
+.dc-price{font-family:var(--font-d);font-size:1.05rem;font-weight:900;color:var(--accent)}
+.dc-rat{font-size:.7rem;color:var(--muted);font-weight:600}
+.fav-btn{
+  width:28px;height:28px;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;cursor:pointer;transition:all var(--tr);padding:0;
+}
+.fav-btn:hover,.fav-btn.faved{border-color:var(--accent3,#ff6b6b);background:rgba(255,107,107,.1)}
+.buy-lnk{
+  display:block;padding:.35rem .75rem;
+  background:var(--accent);color:#fff;
+  font-size:.68rem;font-weight:800;font-family:var(--font-d);
+  cursor:pointer;transition:all var(--tr);text-align:center;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.buy-lnk:hover{background:#e64400;transform:translateY(-1px)}
+
+/* ══════════════════════════════════════════
+   FAVS VIEW
+══════════════════════════════════════════ */
+#v-favs{padding:1.25rem 1.5rem 2rem}
+#v-favs .sec-title{
+  font-family:var(--font-d);font-size:1.5rem;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;margin-bottom:1rem;
+}
+#v-favs .sec-title em{color:var(--accent);font-style:normal}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);
+  backdrop-filter:blur(12px);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.overlay.open{opacity:1;pointer-events:all}
+.sheet{
+  background:var(--surface);
+  border-top:2px solid var(--accent);
+  width:100%;max-width:580px;padding:1.5rem 1.5rem 2.5rem;
+  max-height:92vh;overflow-y:auto;
+  transform:translateY(40px);transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+.overlay.open .sheet{transform:translateY(0)}
+.drag-bar{width:36px;height:3px;background:var(--border);margin:0 auto .9rem}
+.m-head{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.25rem}
+.m-ico{
+  width:72px;height:72px;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:2.2rem;flex-shrink:0;
+}
+.m-name{
+  font-family:var(--font-d);font-size:1.3rem;font-weight:900;
+  text-transform:uppercase;letter-spacing:.03em;line-height:1.1;
+}
+.m-brand{color:var(--muted);font-size:.78rem;margin-top:.2rem;font-weight:500}
+.m-price{font-size:1.5rem;font-weight:900;font-family:var(--font-d);color:var(--accent);margin-top:.3rem}
+.rb-wrap{margin-bottom:1rem}
+.rb-lbl{display:flex;justify-content:space-between;font-size:.73rem;margin-bottom:.35rem;font-weight:600}
+.rb{height:4px;background:var(--border);overflow:hidden}
+.rb-fill{height:100%;background:var(--accent);transition:width 1s ease}
+.spec-g{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.25rem}
+.si{background:var(--card);border:1px solid var(--border);padding:.65rem .75rem}
+.si-l{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;font-weight:700}
+.si-v{font-size:.83rem;font-weight:600}
+.m-btns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.m-fav{
+  padding:.8rem;background:var(--card);border:1.5px solid var(--border);
+  font-weight:700;font-size:.82rem;transition:all var(--tr);cursor:pointer;
+  color:var(--text);text-transform:uppercase;letter-spacing:.06em;
+}
+.m-fav:hover{border-color:#ff6b6b;color:#ff6b6b}
+.m-buy-wrap{display:grid;gap:.4rem}
+.m-buy{
+  display:block;padding:.7rem;text-align:center;
+  font-weight:800;font-size:.8rem;font-family:var(--font-d);
+  color:#fff;transition:all var(--tr);letter-spacing:.08em;text-transform:uppercase;
+}
+.m-buy:hover{transform:translateY(-1px);opacity:.9}
+.m-buy.amz{background:var(--accent)}
+.m-buy.flp{background:#e65c00}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:5.5rem;left:50%;
+  transform:translateX(-50%) translateY(10px);
+  background:var(--accent);color:#fff;
+  padding:.5rem 1.25rem;font-size:.78rem;font-weight:700;
+  z-index:300;opacity:0;pointer-events:none;transition:all var(--tr);
+  white-space:nowrap;letter-spacing:.05em;text-transform:uppercase;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+.empty .ei{font-size:3rem;display:block;margin-bottom:.9rem}
+.empty p{font-size:.85rem;font-weight:400}
+
+.hide{display:none!important}
+
+@media(max-width:440px){
+  .opts{grid-template-columns:1fr}
+  .dc{grid-template-columns:52px 1fr}
+  .dc-r{flex-direction:row;align-items:center;flex-wrap:wrap;grid-column:span 2;justify-content:flex-end}
+  .spec-g{grid-template-columns:1fr}
+  .hero-title{font-size:2.6rem}
+}
+
+/* ── GUEST DIVIDER & BUTTON ── */
+.guest-divider{
+  display:flex;align-items:center;gap:.75rem;
+  margin:1.25rem 0 1rem;color:var(--muted);font-size:.75rem;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.guest-divider::before,.guest-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+.btn-guest{
+  display:block;width:100%;padding:.8rem;
+  background:transparent;color:var(--text);
+  font-family:var(--font-d);font-size:.95rem;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;
+  border:1.5px solid var(--border);border-radius:var(--radius-md);
+  cursor:pointer;transition:all var(--tr);
+}
+.btn-guest:hover{border-color:var(--accent);color:var(--accent);background:rgba(255,77,0,.05)}
+
+/* ── LOGIN-WALL MODAL ── */
+.lwall-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.82);
+  backdrop-filter:blur(14px);z-index:500;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s ease;
+  padding:1.5rem;
+}
+.lwall-overlay.open{opacity:1;pointer-events:all}
+.lwall-sheet{
+  background:var(--surface);border-top:3px solid var(--accent);
+  width:100%;max-width:360px;padding:2rem 1.75rem 1.75rem;
+  text-align:center;
+  transform:scale(.92);transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.lwall-overlay.open .lwall-sheet{transform:scale(1)}
+.lwall-ico{font-size:2.5rem;margin-bottom:.75rem}
+.lwall-title{
+  font-family:var(--font-d);font-size:1.5rem;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem;
+}
+.lwall-sub{
+  font-size:.82rem;color:var(--muted);line-height:1.6;
+  margin-bottom:1.5rem;font-weight:400;
+}
+.lwall-cancel{
+  display:block;width:100%;padding:.5rem;margin-top:.5rem;
+  color:var(--muted);font-size:.76rem;font-weight:600;
+  cursor:pointer;transition:color var(--tr);
+  text-transform:uppercase;letter-spacing:.06em;
+  background:none;border:none;
+}
+.lwall-cancel:hover{color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div class="screen on" id="s-auth">
+  <!-- Left: Hero -->
+  <div class="auth-hero">
+    <div class="auth-hero-grid"></div>
+    <div class="auth-hero-bg"></div>
+    <div class="auth-hero-content">
+      <div class="auth-brand">
+        <span class="auth-brand-line">One Search &bull; Perfect Match</span>
+        Spectra<em>Pick</em>
+      </div>
+      <p class="auth-hero-desc">Stop guessing. Answer a few questions and we surface the exact device built for how you live and work.</p>
+      <div class="auth-stats">
+        <div>
+          <div class="auth-stat-n">8</div>
+          <div class="auth-stat-l">Categories</div>
+        </div>
+        <div>
+          <div class="auth-stat-n">40+</div>
+          <div class="auth-stat-l">Devices</div>
+        </div>
+        <div>
+          <div class="auth-stat-n">60s</div>
+          <div class="auth-stat-l">To Your Pick</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Right: Form -->
+  <div class="auth-form-panel">
+    <div class="auth-form-title">Get Started</div>
+    <div class="auth-form-sub">Sign in or create a free account to save your picks.</div>
+    <div class="tab-row">
+      <div class="atab on" id="tab-login" onclick="switchTab('login')">Sign In</div>
+      <div class="atab" id="tab-signup" onclick="switchTab('signup')">Sign Up</div>
+    </div>
+    <!-- LOGIN -->
+    <div class="fpanel on" id="fp-login">
+      <div class="fg">
+        <label>Email</label>
+        <input type="email" id="li-email" placeholder="you@example.com"/>
+        <span class="ferr" id="e-li-email"></span>
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <input type="password" id="li-pass" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"/>
+        <span class="ferr" id="e-li-pass"></span>
+      </div>
+      <div class="gerr" id="e-li-gen"></div>
+      <button class="btn-main" onclick="doLogin()">Sign In &rarr;</button>
+    </div>
+    <!-- SIGNUP -->
+    <div class="fpanel" id="fp-signup">
+      <div class="fg">
+        <label>Your Name</label>
+        <input type="text" id="su-name" placeholder="Alex Kumar"/>
+        <span class="ferr" id="e-su-name"></span>
+      </div>
+      <div class="fg">
+        <label>Email</label>
+        <input type="email" id="su-email" placeholder="you@example.com"/>
+        <span class="ferr" id="e-su-email"></span>
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <input type="password" id="su-pass" placeholder="Min 6 characters"/>
+        <span class="ferr" id="e-su-pass"></span>
+      </div>
+      <div class="gerr" id="e-su-gen"></div>
+      <button class="btn-main" onclick="doSignup()">Create Account &rarr;</button>
+    </div>
+
+    <!-- GUEST DIVIDER -->
+    <div class="guest-divider">
+      <span>or</span>
+    </div>
+    <!-- GUEST PANEL -->
+    <div class="fg" style="margin-bottom:.5rem">
+      <label>Continue as Guest</label>
+      <input type="text" id="guest-name" placeholder="Enter your name&hellip;" maxlength="30"/>
+      <span class="ferr" id="e-guest-name"></span>
+    </div>
+    <button class="btn-guest" onclick="doGuest()">Enter as Guest &rarr;</button>
+  </div>
+</div>
+
+<!-- LOGIN WALL MODAL (for guests trying to favourite) -->
+<div class="lwall-overlay" id="lwall-overlay">
+  <div class="lwall-sheet">
+    <div class="lwall-ico">&#128274;</div>
+    <div class="lwall-title">Sign In to Save</div>
+    <div class="lwall-sub">Create a free account to save your favourite devices and access them anytime.</div>
+    <button class="btn-main" style="margin-bottom:.75rem" onclick="goToSignup()">Create Account &rarr;</button>
+    <button class="btn-sec" style="width:100%;padding:.75rem;text-align:center" onclick="goToLogin()">Sign In Instead</button>
+    <button class="lwall-cancel" onclick="closeLwall()">Maybe Later</button>
+  </div>
+</div>
+
+<!-- ══════════════ APP SCREEN ══════════════ -->
+<div class="screen" id="s-app">
+  <!-- Nav -->
+  <nav class="topnav">
+    <div class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      Spectra<em>Pick</em>
+    </div>
+    <div class="nav-r">
+      <div class="iBtn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">&#9790;</div>
+      <button class="ava" id="ava-btn" onclick="doLogout()"></button>
+    </div>
+  </nav>
+  <!-- Search -->
+  <div class="search-wrap hide" id="search-wrap">
+    <span class="sico">&#128269;</span>
+    <input type="text" id="gsearch" placeholder="Search devices, brands, specs&hellip;" oninput="onSearch(this.value)"/>
+  </div>
+  <!-- Body -->
+  <div class="app-scroll">
+
+    <!-- HOME VIEW -->
+    <div class="view on" id="v-home">
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <div class="hero-eyebrow">Find Your Edge</div>
+          <h1 class="hero-title">
+            Perfect<em>Device.</em>
+          </h1>
+          <p class="hero-sub">Answer 4 quick questions. We analyse specs, performance and value to surface your top 5 matches.</p>
+          <button class="hero-cta" onclick="scrollToCats()">
+            <span>Explore Categories</span>
+            <span class="hero-cta-arrow">&#8594;</span>
+          </button>
+        </div>
+        <div class="hero-dots">
+          <div class="hero-dot on"></div>
+          <div class="hero-dot"></div>
+          <div class="hero-dot"></div>
+        </div>
+      </div>
+      <!-- Categories -->
+      <div class="cats-section" id="cats-section">
+        <div class="section-eyebrow">Categories</div>
+        <div class="section-title">What Are You<em>Looking For?</em></div>
+        <div class="cat-list" id="cat-list"></div>
+      </div>
+    </div>
+
+    <!-- QUIZ VIEW -->
+    <div class="view" id="v-quiz">
+      <div class="quiz-back" onclick="goHome()">&#8592; Categories</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-lbl" id="prog-lbl">Step 1 of 4</div>
+      <div class="quiz-card" id="quiz-card">
+        <div class="quiz-cat-tag" id="quiz-cat-tag"></div>
+        <div class="quiz-q" id="qtext"></div>
+        <div class="quiz-hint" id="qhint"></div>
+        <div class="opts" id="qopts"></div>
+        <div class="q-nav">
+          <button class="btn-sec" id="btn-back" onclick="qBack()">&#8592; Back</button>
+          <button class="btn-nxt" id="btn-next" onclick="qNext()" disabled>Next &#8594;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS VIEW -->
+    <div class="view" id="v-results">
+      <div class="results-hd">
+        <h2 id="r-title">Top Picks</h2>
+        <div class="results-sub" id="r-sub"></div>
+      </div>
+      <div class="filters" id="f-row"></div>
+      <div class="dev-list" id="dev-list"></div>
+    </div>
+
+    <!-- FAVS VIEW -->
+    <div class="view" id="v-favs">
+      <div class="sec-title">Your <em>Favourites</em></div>
+      <div class="dev-list" id="fav-list"></div>
+    </div>
+
+  </div><!-- /app-scroll -->
+
+  <!-- Bottom Nav -->
+  <nav class="bot-nav">
+    <div class="bn on" id="bn-home" onclick="showView('home')">
+      <span class="bico">&#127968;</span>Home
+    </div>
+    <div class="bn" id="bn-favs" onclick="showView('favs')">
+      <span class="bico">&#10084;</span>Saved
+    </div>
+  </nav>
+</div><!-- /s-app -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="maybeCloseModal(event)">
+  <div class="sheet" id="sheet">
+    <div class="drag-bar"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   DATA
+════════════════════════════════════════ */
+const CATS = [
+  {id:'mobile',  name:'Smartphone',  ico:'📱', col:'#00c8ff', cnt:120},
+  {id:'laptop',  name:'Laptop',      ico:'💻', col:'#7b61ff', cnt:85},
+  {id:'tablet',  name:'Tablet',      ico:'📲', col:'#ff9f43', cnt:40},
+  {id:'tv',      name:'Smart TV',    ico:'📺', col:'#ff6b6b', cnt:55},
+  {id:'tws',     name:'TWS / Buds',  ico:'🎧', col:'#00c896', cnt:60},
+  {id:'watch',   name:'Smartwatch',  ico:'⌚', col:'#fd79a8', cnt:35},
+  {id:'camera',  name:'Camera',      ico:'📷', col:'#e17055', cnt:30},
+  {id:'audio',   name:'Headphones',  ico:'🔊', col:'#a29bfe', cnt:45},
+];
+
+/* Questionnaires — NO budget question */
+const QS = {
+  mobile: [
+    {q:'Primary use case?',       h:'What will you mainly do with it?',   k:'use',     o:['Photography','Gaming','Everyday Use','Business']},
+    {q:'Camera priority?',        h:'How important is camera quality?',   k:'camera',  o:['Flagship Camera','Good Enough','Not Important','Video Focus']},
+    {q:'Battery preference?',     h:'What matters most for battery?',     k:'battery', o:['5000mAh+','Fast Charging','All-day Battery','Compact']},
+    {q:'Preferred brand?',        h:'Or pick No Preference',              k:'brand',   o:['Samsung','Apple','OnePlus','No Preference']},
+  ],
+  laptop: [
+    {q:'Primary use?',            h:'What will you mainly do?',           k:'use',     o:['Coding/Dev','Video Editing','Office/Study','Gaming']},
+    {q:'OS preference?',          h:'Operating system',                   k:'os',      o:['Windows','macOS','No Preference','Linux']},
+    {q:'Display priority?',       h:'What matters for the screen?',       k:'display', o:['Color Accuracy','High Refresh Rate','Compact','Large Screen']},
+    {q:'Battery vs Performance?', h:'Pick your priority',                 k:'perf',    o:['All-day Battery','Raw Performance','Balanced','Ultra-thin']},
+  ],
+  tablet: [
+    {q:'Main usage?',             h:'What will you mainly do?',           k:'use',     o:['Drawing/Art','Entertainment','Study','Work']},
+    {q:'Screen size?',            h:'Preferred display size',             k:'size',    o:['8 inch','10 inch','11 inch','12.9 inch']},
+    {q:'Connectivity?',           h:'Do you need cellular?',             k:'conn',    o:['Wi-Fi Only','Wi-Fi + Cellular','5G','LTE']},
+    {q:'Preferred brand?',        h:'Or No Preference',                  k:'brand',   o:['Apple','Samsung','Xiaomi','No Preference']},
+  ],
+  tv: [
+    {q:'Screen size?',            h:'Preferred screen size',              k:'size',    o:['32 inch','43 inch','55 inch','65 inch+']},
+    {q:'Resolution?',             h:'Display quality',                   k:'res',     o:['Full HD 1080p','4K UHD','OLED 4K','8K']},
+    {q:'Primary use?',            h:'How will you use it most?',         k:'use',     o:['Streaming','Gaming','Sports','All-rounder']},
+    {q:'Brand preference?',       h:'Or No Preference',                  k:'brand',   o:['Sony','LG','Samsung','No Preference']},
+  ],
+  tws: [
+    {q:'Do you need ANC?',        h:'Active Noise Cancellation',         k:'anc',     o:['Must have','Nice to have','Not needed','Transparency too']},
+    {q:'Primary use?',            h:'Main use case',                     k:'use',     o:['Music','Calls','Workouts','Gaming']},
+    {q:'Battery priority?',       h:'Playback time focus',               k:'battery', o:['6hr+','8hr+','Long case life','Quick charge']},
+    {q:'Brand preference?',       h:'Or No Preference',                  k:'brand',   o:['Sony','Apple','Nothing','No Preference']},
+  ],
+  watch: [
+    {q:'Your phone OS?',          h:'For ecosystem compatibility',       k:'os',      o:['Android','iOS/iPhone','No Preference','Wear OS']},
+    {q:'Most important feature?', h:'Pick one priority',                 k:'feat',    o:['Health Tracking','GPS','Long Battery','AMOLED Display']},
+    {q:'Style preference?',       h:'Design language',                   k:'style',   o:['Sporty','Classic Round','Square','Premium Metal']},
+    {q:'Activity level?',         h:'How active are you?',               k:'activity',o:['Casual/Daily','Fitness Focused','Athlete','Outdoor/Adventure']},
+  ],
+  camera: [
+    {q:'Camera type?',            h:'Pick your category',                k:'type',    o:['Mirrorless','DSLR','Point & Shoot','Action Camera']},
+    {q:'Main subject?',           h:'What do you shoot most?',           k:'subject', o:['Portraits','Landscapes','Wildlife/Sports','Video']},
+    {q:'Experience level?',       h:'How experienced are you?',         k:'exp',     o:['Beginner','Hobbyist','Advanced','Professional']},
+    {q:'Brand preference?',       h:'Or No Preference',                  k:'brand',   o:['Sony','Canon','Nikon','No Preference']},
+  ],
+  audio: [
+    {q:'Headphone type?',         h:'What form factor do you prefer?',  k:'type',    o:['Over-ear','On-ear','Wireless Only','Wired + Wireless']},
+    {q:'ANC needed?',             h:'Active Noise Cancellation',         k:'anc',     o:['Must have','Nice to have','Not needed','Transparency too']},
+    {q:'Primary use?',            h:'Main use case',                     k:'use',     o:['Music','Studio/Work','Gaming','Movies']},
+    {q:'Brand preference?',       h:'Or No Preference',                  k:'brand',   o:['Sony','Bose','Sennheiser','No Preference']},
+  ],
+};
+
+const DEVS = [
+  /* ── MOBILES ── */
+  {id:'m1',cat:'mobile',name:'Samsung Galaxy S24 Ultra',brand:'Samsung',ico:'📱',price:134999,ps:'Rs.1,34,999',rat:4.8,tag:'The ultimate Android flagship',
+   specs:{Display:'6.8" QHD+ AMOLED',Chip:'Snapdragon 8 Gen 3',Camera:'200MP Quad',Battery:'5000mAh 45W',RAM:'12GB',Storage:'256GB'},
+   tags:['Photography','Gaming','Samsung','Business','Flagship Camera'],
+   amz:'https://www.amazon.in/s?k=Samsung+Galaxy+S24+Ultra',flp:'https://www.flipkart.com/search?q=Samsung+Galaxy+S24+Ultra'},
+  {id:'m2',cat:'mobile',name:'OnePlus 12',brand:'OnePlus',ico:'📱',price:64999,ps:'Rs.64,999',rat:4.7,tag:'Hasselblad cameras, flagship speed',
+   specs:{Display:'6.82" AMOLED 120Hz',Chip:'Snapdragon 8 Gen 3',Camera:'50MP Hasselblad',Battery:'5400mAh 100W',RAM:'12GB',Storage:'256GB'},
+   tags:['Photography','Fast Charging','OnePlus','Gaming','No Preference'],
+   amz:'https://www.amazon.in/s?k=OnePlus+12',flp:'https://www.flipkart.com/search?q=OnePlus+12'},
+  {id:'m3',cat:'mobile',name:'iPhone 15 Pro',brand:'Apple',ico:'📱',price:134900,ps:'Rs.1,34,900',rat:4.9,tag:'Titanium. Action Button. USB 3.',
+   specs:{Display:'6.1" Super Retina XDR',Chip:'A17 Pro',Camera:'48MP ProRes Triple',Battery:'3274mAh 27W',RAM:'8GB',Storage:'128GB'},
+   tags:['Photography','Video Focus','Apple','Business','Flagship Camera'],
+   amz:'https://www.amazon.in/s?k=iPhone+15+Pro',flp:'https://www.flipkart.com/search?q=iPhone+15+Pro'},
+  {id:'m4',cat:'mobile',name:'Redmi Note 13 Pro+',brand:'Xiaomi',ico:'📱',price:29999,ps:'Rs.29,999',rat:4.5,tag:'200MP camera, crazy fast charging',
+   specs:{Display:'6.67" AMOLED 120Hz',Chip:'Dimensity 7200 Ultra',Camera:'200MP Triple',Battery:'5000mAh 120W',RAM:'8GB',Storage:'256GB'},
+   tags:['Photography','Fast Charging','Everyday Use','Good Enough','No Preference'],
+   amz:'https://www.amazon.in/s?k=Redmi+Note+13+Pro+Plus',flp:'https://www.flipkart.com/search?q=Redmi+Note+13+Pro+Plus'},
+  {id:'m5',cat:'mobile',name:'iQOO 12',brand:'iQOO',ico:'📱',price:52999,ps:'Rs.52,999',rat:4.6,tag:'Monster gaming phone',
+   specs:{Display:'6.78" AMOLED 144Hz',Chip:'Snapdragon 8 Gen 3',Camera:'50MP+64MP Periscope',Battery:'5000mAh 120W',RAM:'12GB',Storage:'256GB'},
+   tags:['Gaming','Fast Charging','No Preference','5000mAh+'],
+   amz:'https://www.amazon.in/s?k=iQOO+12',flp:'https://www.flipkart.com/search?q=iQOO+12'},
+  {id:'m6',cat:'mobile',name:'Motorola Edge 50 Pro',brand:'Motorola',ico:'📱',price:31999,ps:'Rs.31,999',rat:4.3,tag:'Clean Android, crisp 144Hz display',
+   specs:{Display:'6.7" pOLED 144Hz',Chip:'Snapdragon 7s Gen 2',Camera:'50MP Pantone',Battery:'4500mAh 125W',RAM:'12GB',Storage:'256GB'},
+   tags:['Everyday Use','Fast Charging','No Preference','All-day Battery'],
+   amz:'https://www.amazon.in/s?k=Motorola+Edge+50+Pro',flp:'https://www.flipkart.com/search?q=Motorola+Edge+50+Pro'},
+
+  /* ── LAPTOPS ── */
+  {id:'l1',cat:'laptop',name:'MacBook Air M3',brand:'Apple',ico:'💻',price:114900,ps:'Rs.1,14,900',rat:4.9,tag:'Remarkably thin, remarkably powerful',
+   specs:{Display:'13.6" Liquid Retina',Chip:'Apple M3',RAM:'8GB Unified',Storage:'256GB SSD',Battery:'Up to 18hr',OS:'macOS'},
+   tags:['macOS','Coding/Dev','Video Editing','All-day Battery','Ultra-thin','Color Accuracy'],
+   amz:'https://www.amazon.in/s?k=MacBook+Air+M3',flp:'https://www.flipkart.com/search?q=MacBook+Air+M3'},
+  {id:'l2',cat:'laptop',name:'ASUS ROG Zephyrus G14',brand:'ASUS',ico:'💻',price:119990,ps:'Rs.1,19,990',rat:4.7,tag:'Compact gaming powerhouse',
+   specs:{Display:'14" QHD+ 165Hz',Chip:'AMD Ryzen 9 7940HS',RAM:'16GB DDR5',Storage:'1TB SSD',GPU:'RX 7700S',OS:'Windows 11'},
+   tags:['Gaming','Video Editing','High Refresh Rate','Windows','Raw Performance'],
+   amz:'https://www.amazon.in/s?k=ASUS+ROG+Zephyrus+G14',flp:'https://www.flipkart.com/search?q=ASUS+ROG+Zephyrus+G14'},
+  {id:'l3',cat:'laptop',name:'HP Pavilion 15',brand:'HP',ico:'💻',price:62990,ps:'Rs.62,990',rat:4.3,tag:'Everyday laptop done right',
+   specs:{Display:'15.6" FHD IPS',Chip:'Intel i5-13th Gen',RAM:'16GB DDR4',Storage:'512GB SSD',Battery:'Up to 9hr',OS:'Windows 11'},
+   tags:['Office/Study','Balanced','Windows','Large Screen'],
+   amz:'https://www.amazon.in/s?k=HP+Pavilion+15+i5',flp:'https://www.flipkart.com/search?q=HP+Pavilion+15+i5'},
+  {id:'l4',cat:'laptop',name:'Dell XPS 15',brand:'Dell',ico:'💻',price:164990,ps:'Rs.1,64,990',rat:4.8,tag:"Creator's dream — OLED display",
+   specs:{Display:'15.6" 3.5K OLED',Chip:'Intel i7-13700H',RAM:'16GB LPDDR5',Storage:'512GB SSD',GPU:'RTX 4060',OS:'Windows 11'},
+   tags:['Video Editing','Coding/Dev','Color Accuracy','Windows','Raw Performance'],
+   amz:'https://www.amazon.in/s?k=Dell+XPS+15',flp:'https://www.flipkart.com/search?q=Dell+XPS+15'},
+  {id:'l5',cat:'laptop',name:'Lenovo ThinkPad X1 Carbon',brand:'Lenovo',ico:'💻',price:139990,ps:'Rs.1,39,990',rat:4.7,tag:'Business legend, featherweight build',
+   specs:{Display:'14" 2.8K IPS',Chip:'Intel i7-1365U',RAM:'16GB LPDDR5',Storage:'512GB SSD',Battery:'Up to 15hr',OS:'Windows 11 Pro'},
+   tags:['Office/Study','All-day Battery','Compact','Windows','Balanced'],
+   amz:'https://www.amazon.in/s?k=Lenovo+ThinkPad+X1+Carbon',flp:'https://www.flipkart.com/search?q=Lenovo+ThinkPad+X1+Carbon'},
+  {id:'l6',cat:'laptop',name:'Acer Swift Go 14',brand:'Acer',ico:'💻',price:54990,ps:'Rs.54,990',rat:4.4,tag:'Slim OLED, incredible value',
+   specs:{Display:'14" 2.8K OLED',Chip:'AMD Ryzen 5 7530U',RAM:'16GB LPDDR4X',Storage:'512GB SSD',Battery:'Up to 10hr',OS:'Windows 11'},
+   tags:['Office/Study','Ultra-thin','Color Accuracy','Windows','Balanced'],
+   amz:'https://www.amazon.in/s?k=Acer+Swift+Go+14',flp:'https://www.flipkart.com/search?q=Acer+Swift+Go+14'},
+
+  /* ── TABLETS ── */
+  {id:'t1',cat:'tablet',name:'iPad Pro M4 11"',brand:'Apple',ico:'📲',price:99900,ps:'Rs.99,900',rat:4.9,tag:'Ultra Retina OLED. M4 chip.',
+   specs:{Display:'11" Ultra Retina OLED',Chip:'Apple M4',RAM:'8GB',Storage:'256GB',Connectivity:'Wi-Fi + Cellular',Stylus:'Apple Pencil Pro'},
+   tags:['Drawing/Art','Work','Wi-Fi + Cellular','Apple'],
+   amz:'https://www.amazon.in/s?k=iPad+Pro+M4',flp:'https://www.flipkart.com/search?q=iPad+Pro+M4'},
+  {id:'t2',cat:'tablet',name:'Samsung Galaxy Tab S9+',brand:'Samsung',ico:'📲',price:84999,ps:'Rs.84,999',rat:4.7,tag:'Best Android tablet, S-Pen included',
+   specs:{Display:'12.4" Dynamic AMOLED',Chip:'Snapdragon 8 Gen 2',RAM:'12GB',Storage:'256GB',Connectivity:'Wi-Fi + 5G',Stylus:'S-Pen'},
+   tags:['Work','Entertainment','5G','Samsung'],
+   amz:'https://www.amazon.in/s?k=Samsung+Galaxy+Tab+S9+Plus',flp:'https://www.flipkart.com/search?q=Samsung+Galaxy+Tab+S9+Plus'},
+  {id:'t3',cat:'tablet',name:'Xiaomi Pad 6',brand:'Xiaomi',ico:'📲',price:26999,ps:'Rs.26,999',rat:4.5,tag:'Best value 11" tablet',
+   specs:{Display:'11" 2.8K IPS 144Hz',Chip:'Snapdragon 870',RAM:'6GB',Storage:'128GB',Connectivity:'Wi-Fi Only'},
+   tags:['Entertainment','Study','Wi-Fi Only','Xiaomi'],
+   amz:'https://www.amazon.in/s?k=Xiaomi+Pad+6',flp:'https://www.flipkart.com/search?q=Xiaomi+Pad+6'},
+  {id:'t4',cat:'tablet',name:'iPad Air M2',brand:'Apple',ico:'📲',price:59900,ps:'Rs.59,900',rat:4.8,tag:'All the power. More affordable.',
+   specs:{Display:'11" Liquid Retina',Chip:'Apple M2',RAM:'8GB',Storage:'128GB',Connectivity:'Wi-Fi Only'},
+   tags:['Drawing/Art','Study','Work','Apple'],
+   amz:'https://www.amazon.in/s?k=iPad+Air+M2',flp:'https://www.flipkart.com/search?q=iPad+Air+M2'},
+  {id:'t5',cat:'tablet',name:'OnePlus Pad 2',brand:'OnePlus',ico:'📲',price:39999,ps:'Rs.39,999',rat:4.6,tag:'Fluid 144Hz, Snapdragon 8s Gen 3',
+   specs:{Display:'12.1" 3K 144Hz LCD',Chip:'Snapdragon 8s Gen 3',RAM:'12GB',Storage:'256GB',Connectivity:'Wi-Fi Only'},
+   tags:['Entertainment','Study','No Preference'],
+   amz:'https://www.amazon.in/s?k=OnePlus+Pad+2',flp:'https://www.flipkart.com/search?q=OnePlus+Pad+2'},
+
+  /* ── TVs ── */
+  {id:'tv1',cat:'tv',name:'Sony Bravia XR X90L 55"',brand:'Sony',ico:'📺',price:124990,ps:'Rs.1,24,990',rat:4.8,tag:'Cognitive Processor XR magic',
+   specs:{Display:'55" 4K Full Array LED',HDR:'Dolby Vision+HDR10',Audio:'Dolby Atmos',Refresh:'120Hz',OS:'Google TV'},
+   tags:['Streaming','Sports','All-rounder','Sony'],
+   amz:'https://www.amazon.in/s?k=Sony+Bravia+XR+X90L+55',flp:'https://www.flipkart.com/search?q=Sony+Bravia+XR+X90L+55'},
+  {id:'tv2',cat:'tv',name:'LG C3 OLED 55"',brand:'LG',ico:'📺',price:149990,ps:'Rs.1,49,990',rat:4.9,tag:'Gold standard OLED for everything',
+   specs:{Display:'55" OLED evo 4K',HDR:'Dolby Vision IQ',Audio:'Dolby Atmos',Refresh:'120Hz',OS:'webOS 23'},
+   tags:['Gaming','Streaming','OLED 4K','LG'],
+   amz:'https://www.amazon.in/s?k=LG+C3+OLED+55',flp:'https://www.flipkart.com/search?q=LG+C3+OLED+55'},
+  {id:'tv3',cat:'tv',name:'Redmi Smart TV X43',brand:'Redmi',ico:'📺',price:27999,ps:'Rs.27,999',rat:4.4,tag:'Best 43" budget 4K TV',
+   specs:{Display:'43" 4K UHD LED',HDR:'HDR10+',Audio:'30W Dolby',Refresh:'60Hz',OS:'Android TV'},
+   tags:['Streaming','4K UHD','No Preference'],
+   amz:'https://www.amazon.in/s?k=Redmi+Smart+TV+X43',flp:'https://www.flipkart.com/search?q=Redmi+Smart+TV+X43'},
+  {id:'tv4',cat:'tv',name:'Samsung Neo QLED QN90C 65"',brand:'Samsung',ico:'📺',price:234990,ps:'Rs.2,34,990',rat:4.7,tag:'Mini-LED brilliance at 65"',
+   specs:{Display:'65" Neo QLED 4K',HDR:'HDR10+ Adaptive',Audio:'60W Dolby Atmos',Refresh:'144Hz',OS:'Tizen'},
+   tags:['Gaming','Sports','All-rounder','Samsung'],
+   amz:'https://www.amazon.in/s?k=Samsung+Neo+QLED+QN90C+65',flp:'https://www.flipkart.com/search?q=Samsung+Neo+QLED+QN90C+65'},
+  {id:'tv5',cat:'tv',name:'TCL C755 55" QLED',brand:'TCL',ico:'📺',price:54990,ps:'Rs.54,990',rat:4.5,tag:'QLED + 144Hz incredible value',
+   specs:{Display:'55" QLED 4K',HDR:'Dolby Vision',Audio:'Dolby Atmos',Refresh:'144Hz',OS:'Google TV'},
+   tags:['Gaming','Sports','Streaming','No Preference'],
+   amz:'https://www.amazon.in/s?k=TCL+C755+55+QLED',flp:'https://www.flipkart.com/search?q=TCL+C755+55+QLED'},
+
+  /* ── TWS ── */
+  {id:'tw1',cat:'tws',name:'Sony WF-1000XM5',brand:'Sony',ico:'🎧',price:24990,ps:'Rs.24,990',rat:4.9,tag:'Class-leading ANC earbuds',
+   specs:{Driver:'8.4mm Dynamic',ANC:'Dual Processor',Battery:'8hr + 16hr case',BT:'BT 5.3 LDAC',Features:'Multipoint'},
+   tags:['Music','Calls','Must have','Sony'],
+   amz:'https://www.amazon.in/s?k=Sony+WF-1000XM5',flp:'https://www.flipkart.com/search?q=Sony+WF-1000XM5'},
+  {id:'tw2',cat:'tws',name:'Apple AirPods Pro 2nd Gen',brand:'Apple',ico:'🎧',price:24900,ps:'Rs.24,900',rat:4.8,tag:'H2 chip + Adaptive Transparency',
+   specs:{Driver:'Custom Apple H2',ANC:'Adaptive ANC',Battery:'6hr + 24hr case',BT:'BT 5.3 AAC',Features:'Spatial Audio'},
+   tags:['Music','Calls','Must have','Apple'],
+   amz:'https://www.amazon.in/s?k=AirPods+Pro+2',flp:'https://www.flipkart.com/search?q=AirPods+Pro+2'},
+  {id:'tw3',cat:'tws',name:'Nothing Ear (2)',brand:'Nothing',ico:'🎧',price:8999,ps:'Rs.8,999',rat:4.6,tag:'Iconic design meets serious ANC',
+   specs:{Driver:'11.6mm Dynamic',ANC:'Dual Compression',Battery:'6.3hr+36hr case',BT:'BT 5.3 LHDC',Features:'Multipoint EQ'},
+   tags:['Music','Nice to have','Nothing','No Preference'],
+   amz:'https://www.amazon.in/s?k=Nothing+Ear+2',flp:'https://www.flipkart.com/search?q=Nothing+Ear+2'},
+  {id:'tw4',cat:'tws',name:'boAt Airdopes 161',brand:'boAt',ico:'🎧',price:999,ps:'Rs.999',rat:4.1,tag:'Budget buds that punch above weight',
+   specs:{Driver:'10mm Dynamic',ANC:'None',Battery:'6hr+20hr case',BT:'BT 5.0',Features:'Unibutton'},
+   tags:['Music','Not needed','Workouts','No Preference'],
+   amz:'https://www.amazon.in/s?k=boAt+Airdopes+161',flp:'https://www.flipkart.com/search?q=boAt+Airdopes+161'},
+  {id:'tw5',cat:'tws',name:'Jabra Elite 10',brand:'Jabra',ico:'🎧',price:19999,ps:'Rs.19,999',rat:4.7,tag:'ComfortFit + Dolby Head Tracking',
+   specs:{Driver:'10mm Balanced',ANC:'Advanced ANC',Battery:'6hr+27hr case',BT:'BT 5.3 AAC',Features:'Dolby Atmos'},
+   tags:['Music','Calls','Must have','No Preference'],
+   amz:'https://www.amazon.in/s?k=Jabra+Elite+10',flp:'https://www.flipkart.com/search?q=Jabra+Elite+10'},
+
+  /* ── SMARTWATCH ── */
+  {id:'sw1',cat:'watch',name:'Apple Watch Series 9',brand:'Apple',ico:'⌚',price:41900,ps:'Rs.41,900',rat:4.8,tag:'Brighter. Smarter. Double Tap.',
+   specs:{Display:'1.9" Always-On Retina',Health:'ECG Blood Oxygen',GPS:'Built-in',Battery:'Up to 18hr',OS:'watchOS 10'},
+   tags:['Health Tracking','GPS','iOS/iPhone','AMOLED Display','Fitness Focused','Classic Round'],
+   amz:'https://www.amazon.in/s?k=Apple+Watch+Series+9',flp:'https://www.flipkart.com/search?q=Apple+Watch+Series+9'},
+  {id:'sw2',cat:'watch',name:'Samsung Galaxy Watch 6',brand:'Samsung',ico:'⌚',price:26999,ps:'Rs.26,999',rat:4.6,tag:'Advanced health meets Wear OS',
+   specs:{Display:'1.47" Super AMOLED',Health:'Sleep Body Comp',GPS:'GPS+BeiDou',Battery:'Up to 40hr',OS:'Wear OS 4'},
+   tags:['Health Tracking','GPS','Android','AMOLED Display','Fitness Focused','Round'],
+   amz:'https://www.amazon.in/s?k=Samsung+Galaxy+Watch+6',flp:'https://www.flipkart.com/search?q=Samsung+Galaxy+Watch+6'},
+  {id:'sw3',cat:'watch',name:'Amazfit GTR 4',brand:'Amazfit',ico:'⌚',price:13999,ps:'Rs.13,999',rat:4.5,tag:'14-day battery, 150 sports modes',
+   specs:{Display:'1.43" AMOLED',Health:'SpO2 HR Stress',GPS:'4-System GPS',Battery:'Up to 14 days',OS:'Zepp OS'},
+   tags:['Long Battery','GPS','Health Tracking','No Preference','Outdoor/Adventure','Classic Round'],
+   amz:'https://www.amazon.in/s?k=Amazfit+GTR+4',flp:'https://www.flipkart.com/search?q=Amazfit+GTR+4'},
+  {id:'sw4',cat:'watch',name:'Garmin Forerunner 265',brand:'Garmin',ico:'⌚',price:44990,ps:'Rs.44,990',rat:4.8,tag:'Triathlete-grade training watch',
+   specs:{Display:'1.3" AMOLED',Health:'VO2Max HRV Training',GPS:'Multi-Band GPS',Battery:'Up to 15 days',OS:'Garmin OS'},
+   tags:['GPS','Health Tracking','Sporty','Long Battery','Athlete','Outdoor/Adventure'],
+   amz:'https://www.amazon.in/s?k=Garmin+Forerunner+265',flp:'https://www.flipkart.com/search?q=Garmin+Forerunner+265'},
+  {id:'sw5',cat:'watch',name:'boAt Wave Sigma',brand:'boAt',ico:'⌚',price:1999,ps:'Rs.1,999',rat:4.0,tag:'Essential smartwatch features',
+   specs:{Display:'1.85" LCD',Health:'SpO2 HR Steps',GPS:'No GPS',Battery:'Up to 7 days',OS:'boAt OS'},
+   tags:['Health Tracking','Android','Casual/Daily','Square'],
+   amz:'https://www.amazon.in/s?k=boAt+Wave+Sigma',flp:'https://www.flipkart.com/search?q=boAt+Wave+Sigma'},
+
+  /* ── CAMERA ── */
+  {id:'c1',cat:'camera',name:'Sony Alpha A7 IV',brand:'Sony',ico:'📷',price:249990,ps:'Rs.2,49,990',rat:4.9,tag:'33MP full-frame hybrid perfection',
+   specs:{Sensor:'33MP BSI Full-Frame',Video:'4K 60fps',AF:'Eye AF 759pt',ISO:'50-204800',IBIS:'5.5 stops',Mount:'Sony E-Mount'},
+   tags:['Portraits','Landscapes','Video','Sony','Mirrorless','Advanced','Professional'],
+   amz:'https://www.amazon.in/s?k=Sony+Alpha+A7+IV',flp:'https://www.flipkart.com/search?q=Sony+A7+IV'},
+  {id:'c2',cat:'camera',name:'Canon EOS R8',brand:'Canon',ico:'📷',price:129990,ps:'Rs.1,29,990',rat:4.7,tag:'Full-frame entry mirrorless',
+   specs:{Sensor:'24.2MP Full-Frame',Video:'4K 30fps',AF:'Dual Pixel CMOS AF II',ISO:'100-102400',Mount:'RF Mount'},
+   tags:['Portraits','Video','Canon','Mirrorless','Hobbyist','Advanced'],
+   amz:'https://www.amazon.in/s?k=Canon+EOS+R8',flp:'https://www.flipkart.com/search?q=Canon+EOS+R8'},
+  {id:'c3',cat:'camera',name:'Nikon Z6 III',brand:'Nikon',ico:'📷',price:229990,ps:'Rs.2,29,990',rat:4.8,tag:'Partial Stacked CMOS, 6K RAW',
+   specs:{Sensor:'24.5MP Partial-Stacked',Video:'6K RAW/4K 120fps',AF:'Multi-CAM AI AF',IBIS:'8 stops',Mount:'Nikon Z Mount'},
+   tags:['Portraits','Wildlife/Sports','Video','Nikon','Mirrorless','Professional'],
+   amz:'https://www.amazon.in/s?k=Nikon+Z6+III',flp:'https://www.flipkart.com/search?q=Nikon+Z6+III'},
+  {id:'c4',cat:'camera',name:'GoPro Hero 12 Black',brand:'GoPro',ico:'📷',price:39990,ps:'Rs.39,990',rat:4.6,tag:'Action camera. Redefined.',
+   specs:{Sensor:'27MP 1/1.9" CMOS',Video:'5.3K 60fps',Stab:'HyperSmooth 6.0',WP:'10m waterproof',Type:'Action Camera'},
+   tags:['Wildlife/Sports','Video','Action Camera','No Preference','Beginner','Hobbyist'],
+   amz:'https://www.amazon.in/s?k=GoPro+Hero+12',flp:'https://www.flipkart.com/search?q=GoPro+Hero+12'},
+  {id:'c5',cat:'camera',name:'Fujifilm X-S20',brand:'Fujifilm',ico:'📷',price:109990,ps:'Rs.1,09,990',rat:4.7,tag:'Content creator mirrorless',
+   specs:{Sensor:'26MP X-Trans CMOS 4',Video:'6.2K 30fps',AF:'Intelligent Hybrid AF',IBIS:'7-stop',Mount:'Fujifilm X Mount'},
+   tags:['Portraits','Video','Landscapes','Mirrorless','No Preference','Hobbyist','Advanced'],
+   amz:'https://www.amazon.in/s?k=Fujifilm+X-S20',flp:'https://www.flipkart.com/search?q=Fujifilm+X-S20'},
+
+  /* ── AUDIO (Headphones) ── */
+  {id:'a1',cat:'audio',name:'Sony WH-1000XM5',brand:'Sony',ico:'🔊',price:29990,ps:'Rs.29,990',rat:4.9,tag:'World-class ANC over-ear',
+   specs:{Type:'Over-ear Wireless',ANC:'Industry Best',Battery:'30hr + Quick charge',Driver:'30mm',BT:'BT 5.2 LDAC',Weight:'250g'},
+   tags:['Music','Must have','Over-ear','Sony','Wireless Only'],
+   amz:'https://www.amazon.in/s?k=Sony+WH-1000XM5',flp:'https://www.flipkart.com/search?q=Sony+WH-1000XM5'},
+  {id:'a2',cat:'audio',name:'Bose QuietComfort 45',brand:'Bose',ico:'🔊',price:24500,ps:'Rs.24,500',rat:4.8,tag:'Legendary comfort meets ANC',
+   specs:{Type:'Over-ear Wireless',ANC:'QuietComfort',Battery:'24hr + Quick charge',Driver:'40mm',BT:'BT 5.1 AAC',Weight:'238g'},
+   tags:['Music','Must have','Over-ear','Bose','Wireless Only'],
+   amz:'https://www.amazon.in/s?k=Bose+QuietComfort+45',flp:'https://www.flipkart.com/search?q=Bose+QuietComfort+45'},
+  {id:'a3',cat:'audio',name:'Sennheiser HD 560S',brand:'Sennheiser',ico:'🔊',price:14990,ps:'Rs.14,990',rat:4.7,tag:'Reference-grade open-back detail',
+   specs:{Type:'Over-ear Wired',ANC:'Open-back',Battery:'N/A (Wired)',Driver:'38mm',Impedance:'120 Ohm',Weight:'240g'},
+   tags:['Studio/Work','Not needed','Over-ear','Sennheiser','Wired + Wireless'],
+   amz:'https://www.amazon.in/s?k=Sennheiser+HD+560S',flp:'https://www.flipkart.com/search?q=Sennheiser+HD+560S'},
+  {id:'a4',cat:'audio',name:'HyperX Cloud Alpha',brand:'HyperX',ico:'🔊',price:7999,ps:'Rs.7,999',rat:4.6,tag:'Gaming headset built to last',
+   specs:{Type:'Over-ear Wired',ANC:'None',Battery:'N/A (Wired)',Driver:'50mm Dual Chamber',BT:'3.5mm + USB',Weight:'298g'},
+   tags:['Gaming','Not needed','Over-ear','No Preference','Wired + Wireless'],
+   amz:'https://www.amazon.in/s?k=HyperX+Cloud+Alpha',flp:'https://www.flipkart.com/search?q=HyperX+Cloud+Alpha'},
+  {id:'a5',cat:'audio',name:'Jabra Evolve2 75',brand:'Jabra',ico:'🔊',price:34999,ps:'Rs.34,999',rat:4.7,tag:'Professional ANC for hybrid work',
+   specs:{Type:'Over-ear Wireless',ANC:'Hybrid ANC',Battery:'36hr + Quick charge',Driver:'40mm',BT:'BT 5.2 AAC',Weight:'282g'},
+   tags:['Music','Studio/Work','Must have','Over-ear','No Preference','Wireless Only'],
+   amz:'https://www.amazon.in/s?k=Jabra+Evolve2+75',flp:'https://www.flipkart.com/search?q=Jabra+Evolve2+75'},
+];
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let curUser=null, curCat=null, qStep=0, qAns={}, curResults=[], favs=[], dark=true;
+// isGuest = true when logged in as guest (no persistance for favs)
+let isGuest = false;
+
+/* ════════════════════════════════════════
+   BRAND ALIASES — maps answer values → brand names
+   covers every question that might have a brand answer
+════════════════════════════════════════ */
+const BRAND_MAP = {
+  // mobiles
+  'Samsung':'Samsung','Apple':'Apple','OnePlus':'OnePlus',
+  // laptops (no explicit brand Q but OS maps)
+  // tablets
+  'Xiaomi':'Xiaomi',
+  // TVs
+  'LG':'LG','Sony':'Sony','TCL':'TCL','Redmi':'Redmi',
+  // TWS
+  'Nothing':'Nothing','Jabra':'Jabra','boAt':'boAt','Bose':'Bose',
+  'Sennheiser':'Sennheiser','HyperX':'HyperX',
+  // watches
+  'Garmin':'Garmin','Amazfit':'Amazfit',
+  // cameras
+  'Canon':'Canon','Nikon':'Nikon','Fujifilm':'Fujifilm','GoPro':'GoPro',
+  // audio
+};
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  dark = localStorage.getItem('sp_theme') !== 'light';
+  applyTheme();
+  favs = JSON.parse(localStorage.getItem('sp_favs') || '[]');
+  const u = localStorage.getItem('sp_user');
+  if (u) {
+    const parsed = JSON.parse(u);
+    curUser = parsed;
+    isGuest = parsed.guest === true;
+    launchApp();
+  }
+});
+
+/* ════════════════════════════════════════
+   THEME
+════════════════════════════════════════ */
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.innerHTML = dark ? '&#9790;' : '&#9728;';
+}
+function toggleTheme() {
+  dark = !dark; applyTheme();
+  localStorage.setItem('sp_theme', dark ? 'dark' : 'light');
+}
+
+/* ════════════════════════════════════════
+   AUTH
+════════════════════════════════════════ */
+function switchTab(t) {
+  ['login','signup'].forEach(x => {
+    document.getElementById('tab-'+x).classList.toggle('on', x===t);
+    document.getElementById('fp-'+x).classList.toggle('on', x===t);
+  });
+}
+
+function doLogin() {
+  const email = gv('li-email'), pass = gv('li-pass');
+  let ok = true;
+  if (!isEmail(email)) { se('e-li-email','Enter a valid email'); ok=false; } else se('e-li-email','');
+  if (pass.length < 6)  { se('e-li-pass','Min 6 characters');   ok=false; } else se('e-li-pass','');
+  if (!ok) return;
+  const users = JSON.parse(localStorage.getItem('sp_users') || '[]');
+  const user = users.find(u => u.email===email && u.pass===pass);
+  if (!user) { se('e-li-gen','Wrong email or password'); return; }
+  se('e-li-gen','');
+  isGuest = false;
+  curUser = user;
+  localStorage.setItem('sp_user', JSON.stringify(user));
+  launchApp();
+}
+
+function doSignup() {
+  const name = gv('su-name'), email = gv('su-email'), pass = gv('su-pass');
+  let ok = true;
+  if (name.length < 2)  { se('e-su-name','Enter your name');    ok=false; } else se('e-su-name','');
+  if (!isEmail(email))  { se('e-su-email','Enter a valid email');ok=false; } else se('e-su-email','');
+  if (pass.length < 6)  { se('e-su-pass','Min 6 characters');   ok=false; } else se('e-su-pass','');
+  if (!ok) return;
+  const users = JSON.parse(localStorage.getItem('sp_users') || '[]');
+  if (users.find(u => u.email===email)) { se('e-su-gen','Email already registered'); return; }
+  const user = {name, email, pass};
+  users.push(user);
+  localStorage.setItem('sp_users', JSON.stringify(users));
+  localStorage.setItem('sp_user', JSON.stringify(user));
+  isGuest = false;
+  curUser = user;
+  se('e-su-gen','');
+  launchApp();
+}
+
+/* GUEST LOGIN */
+function doGuest() {
+  const name = gv('guest-name').trim();
+  if (name.length < 2) { se('e-guest-name','Please enter your name'); return; }
+  se('e-guest-name','');
+  const guestUser = {name, guest: true};
+  isGuest = true;
+  curUser = guestUser;
+  // Don't persist guest to localStorage permanently — session only
+  localStorage.setItem('sp_user', JSON.stringify(guestUser));
+  favs = []; // guests start with empty favs (not saved)
+  launchApp();
+}
+
+function doLogout() {
+  if (!confirm('Sign out?')) return;
+  localStorage.removeItem('sp_user');
+  curUser = null; isGuest = false; favs = [];
+  goScreen('auth');
+  // clear guest name field for next time
+  const gf = document.getElementById('guest-name');
+  if (gf) gf.value = '';
+}
+
+function isEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function gv(id)     { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+function se(id,msg) { const el=document.getElementById(id); if(el) el.textContent=msg; }
+
+/* ════════════════════════════════════════
+   LOGIN WALL (for guests clicking fav)
+════════════════════════════════════════ */
+function openLwall() {
+  document.getElementById('lwall-overlay').classList.add('open');
+}
+function closeLwall() {
+  document.getElementById('lwall-overlay').classList.remove('open');
+}
+function goToSignup() {
+  closeLwall();
+  // log out guest, go back to auth at signup tab
+  localStorage.removeItem('sp_user');
+  curUser = null; isGuest = false; favs = [];
+  goScreen('auth');
+  switchTab('signup');
+}
+function goToLogin() {
+  closeLwall();
+  localStorage.removeItem('sp_user');
+  curUser = null; isGuest = false; favs = [];
+  goScreen('auth');
+  switchTab('login');
+}
+
+/* ════════════════════════════════════════
+   SCREEN ROUTING
+════════════════════════════════════════ */
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id==='s-'+id));
+}
+
+function launchApp() {
+  const btn = document.getElementById('ava-btn');
+  if (btn) {
+    btn.textContent = curUser.name[0].toUpperCase();
+    // Dim avatar slightly for guest
+    btn.style.opacity = isGuest ? '.7' : '1';
+    btn.title = isGuest ? 'Guest — tap to sign out' : 'Signed in as ' + curUser.name;
+  }
+  goScreen('app');
+  buildCatList();
+  showView('home');
+}
+
+/* ════════════════════════════════════════
+   VIEWS
+════════════════════════════════════════ */
+function showView(name) {
+  ['home','quiz','results','favs'].forEach(v => {
+    const el = document.getElementById('v-'+v);
+    if (el) el.classList.toggle('on', v===name);
+  });
+  const sw = document.getElementById('search-wrap');
+  if (sw) sw.classList.toggle('hide', name!=='home' && name!=='results');
+  ['home','favs'].forEach(n => {
+    const el = document.getElementById('bn-'+n);
+    if (el) el.classList.toggle('on', n===name);
+  });
+  if (name==='home') {
+    const gs = document.getElementById('gsearch');
+    if (gs) gs.value = '';
+    buildCatList();
+  }
+  if (name==='favs') renderFavs();
+  const scroll = document.querySelector('.app-scroll');
+  if (scroll) scroll.scrollTop = 0;
+}
+
+function goHome() { showView('home'); }
+
+function scrollToCats() {
+  const el = document.getElementById('cats-section');
+  if (el) el.scrollIntoView({behavior:'smooth'});
+}
+
+/* ════════════════════════════════════════
+   SEARCH
+════════════════════════════════════════ */
+function onSearch(q) {
+  if (!q.trim()) {
+    if (document.getElementById('v-results').classList.contains('on')) showView('home');
+    return;
+  }
+  const lq = q.toLowerCase();
+  const res = DEVS.filter(d =>
+    d.name.toLowerCase().includes(lq) ||
+    d.brand.toLowerCase().includes(lq) ||
+    d.tag.toLowerCase().includes(lq)
+  );
+  curResults = res;
+  document.getElementById('r-title').textContent = 'Search Results';
+  document.getElementById('r-sub').textContent = res.length + ' devices found';
+  renderFilters([]); renderResults(res); showView('results');
+}
+
+/* ════════════════════════════════════════
+   CATEGORY LIST
+════════════════════════════════════════ */
+function buildCatList() {
+  const g = document.getElementById('cat-list'); if (!g) return;
+  g.innerHTML = CATS.map((c, i) => `
+    <div class="cat-item" onclick="startQuiz('${c.id}')">
+      <div class="cat-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="cat-divider"></div>
+      <div class="cat-ico">${c.ico}</div>
+      <div class="cat-info">
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-cnt">${c.cnt}+ devices</div>
+      </div>
+      <div class="cat-arrow">&#8594;</div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   QUIZ
+════════════════════════════════════════ */
+function startQuiz(catId) {
+  curCat = catId; qStep = 0; qAns = {};
+  showView('quiz'); renderStep();
+}
+
+function renderStep() {
+  const qs = QS[curCat]; if (!qs) return;
+  const q = qs[qStep], total = qs.length;
+  document.getElementById('prog-fill').style.width = (qStep / total * 100) + '%';
+  document.getElementById('prog-lbl').textContent = 'Step ' + (qStep+1) + ' of ' + total;
+  const cat = CATS.find(c => c.id===curCat);
+  document.getElementById('quiz-cat-tag').innerHTML = (cat ? cat.ico+' ' : '') + (cat ? cat.name.toUpperCase() : '');
+  document.getElementById('qtext').textContent = q.q;
+  document.getElementById('qhint').textContent = q.h;
+  const bk = document.getElementById('btn-back');
+  bk.style.visibility = qStep===0 ? 'hidden' : 'visible';
+  const nx = document.getElementById('btn-next');
+  nx.disabled = !qAns[q.k];
+  nx.textContent = qStep===qs.length-1 ? 'See Results' : 'Next \u2192';
+  const optsEl = document.getElementById('qopts');
+  optsEl.innerHTML = q.o.map((o, i) => `
+    <button class="opt${qAns[q.k]===o?' picked':''}" onclick="pickOpt(this,'${q.k}',${i})">${o}</button>`
+  ).join('');
+  const card = document.getElementById('quiz-card');
+  card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp .3s ease';
+}
+
+function pickOpt(el, key, idx) {
+  qAns[key] = QS[curCat][qStep].o[idx];
+  document.querySelectorAll('.opt').forEach(b => b.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('btn-next').disabled = false;
+}
+
+function qNext() {
+  const qs = QS[curCat];
+  if (qStep < qs.length-1) { qStep++; renderStep(); }
+  else showRecs();
+}
+function qBack() { if (qStep > 0) { qStep--; renderStep(); } }
+
+/* ════════════════════════════════════════
+   SMART RECOMMENDATIONS ENGINE
+   Priority order:
+   1. BRAND exact match gets a massive bonus (300 pts)
+      so selected-brand devices ALWAYS come first
+   2. Feature/tag overlap (25 pts each match)
+   3. Base rating (× 12)
+   No-Preference brand answers are ignored for brand boost
+════════════════════════════════════════ */
+function showRecs() {
+  const pool = DEVS.filter(d => d.cat===curCat);
+
+  // Detect if user chose a specific brand (not "No Preference")
+  const brandAns = Object.values(qAns).find(val => {
+    const lower = val.toLowerCase();
+    return lower !== 'no preference' && BRAND_MAP[val] !== undefined;
+  });
+  const chosenBrand = brandAns ? BRAND_MAP[brandAns] : null;
+
+  const scored = pool.map(d => {
+    let sc = d.rat * 12; // base score from rating
+
+    // ── BRAND PRIORITY BOOST ──
+    // If user picked a specific brand and this device matches → huge boost
+    if (chosenBrand && d.brand.toLowerCase() === chosenBrand.toLowerCase()) {
+      sc += 300; // guaranteed top position for matching brand devices
+    }
+
+    // ── FEATURE / TAG MATCHING ──
+    // Score each answer against device tags (skip brand answers — already handled above)
+    Object.entries(qAns).forEach(([key, val]) => {
+      const lower = val.toLowerCase();
+      // skip "No Preference" and brand answers (don't double-count)
+      if (lower === 'no preference') return;
+      if (chosenBrand && BRAND_MAP[val] && BRAND_MAP[val].toLowerCase() === chosenBrand.toLowerCase()) return;
+
+      if (d.tags) {
+        d.tags.forEach(t => {
+          const tl = t.toLowerCase();
+          if (tl === lower) {
+            sc += 25; // exact match
+          } else if (lower.includes(tl) || tl.includes(lower)) {
+            sc += 12; // partial match
+          }
+        });
+      }
+    });
+
+    return {...d, _sc: sc};
+  });
+
+  // Sort descending by score
+  scored.sort((a, b) => b._sc - a._sc);
+  curResults = scored.slice(0, 5);
+
+  const cat = CATS.find(c => c.id===curCat);
+  document.getElementById('r-title').textContent = 'Top ' + (cat?cat.ico:'') + ' Picks for You';
+  document.getElementById('r-sub').textContent =
+    chosenBrand
+      ? chosenBrand + ' devices prioritised · based on your preferences'
+      : 'Based on your preferences';
+
+  renderFilters(['All','By Rating','By Price']);
+  renderResults(curResults);
+  showView('results');
+}
+
+function renderFilters(arr) {
+  document.getElementById('f-row').innerHTML = arr.map((f, i) =>
+    `<button class="fbtn${i===0?' on':''}" onclick="applyFilter('${f}',this)">${f}</button>`
+  ).join('');
+}
+function applyFilter(f, el) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  let s = [...curResults];
+  if (f==='By Price')  s.sort((a,b) => a.price-b.price);
+  if (f==='By Rating') s.sort((a,b) => b.rat-a.rat);
+  renderResults(s);
+}
+
+/* Compute a human-readable match % capped at 99 */
+function matchPct(sc) {
+  // base 48 (= 4.0 rat × 12), max useful ~360 (brand+4 features)
+  const pct = Math.round(((sc - 48) / 312) * 79) + 20;
+  return Math.min(99, Math.max(20, pct));
+}
+
+function renderResults(list) {
+  const el = document.getElementById('dev-list');
+  if (!list.length) {
+    el.innerHTML='<div class="empty"><span class="ei">&#128269;</span><p>No devices found. Try a different search.</p></div>';
+    return;
+  }
+  el.innerHTML = list.map((d, i) => `
+    <div class="dc" onclick="openModal('${d.id}')">
+      ${i===0 ? '<div class="dc-badge">Best Pick</div>' : ''}
+      <div class="dc-thumb">${d.ico}</div>
+      <div>
+        <div class="dc-name">${d.name}</div>
+        <div class="dc-tag">${d.tag}</div>
+        <div class="dc-specs">
+          ${Object.entries(d.specs).slice(0,3).map(([,v])=>`<span class="spec-pill">${v}</span>`).join('')}
+        </div>
+        ${d._sc ? `<div class="match">&#10003; ${matchPct(d._sc)}% match</div>` : ''}
+      </div>
+      <div class="dc-r">
+        <div class="dc-price">${d.ps}</div>
+        <div class="dc-rat">&#9733; ${d.rat}</div>
+        <button class="fav-btn${favs.includes(d.id)?' faved':''}"
+          onclick="toggleFav(event,'${d.id}')">${favs.includes(d.id)?'&#10084;':'&#9825;'}</button>
+        <a class="buy-lnk" href="${d.amz}" target="_blank" onclick="event.stopPropagation()">Buy</a>
+      </div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   FAVOURITES
+════════════════════════════════════════ */
+function toggleFav(e, id) {
+  e.stopPropagation();
+
+  // Guest → show login wall instead
+  if (isGuest) {
+    openLwall();
+    return;
+  }
+
+  if (favs.includes(id)) {
+    favs = favs.filter(f => f!==id);
+    toast('Removed from saved');
+  } else {
+    favs.push(id);
+    toast('Saved to favourites');
+  }
+  localStorage.setItem('sp_favs', JSON.stringify(favs));
+
+  // Refresh button states in all visible cards
+  document.querySelectorAll('.dc').forEach(card => {
+    const oc = card.getAttribute('onclick') || '';
+    if (oc.includes("'"+id+"'")) {
+      const btn = card.querySelector('.fav-btn');
+      if (btn) {
+        btn.classList.toggle('faved', favs.includes(id));
+        btn.innerHTML = favs.includes(id) ? '&#10084;' : '&#9825;';
+      }
+    }
+  });
+}
+
+function renderFavs() {
+  const el = document.getElementById('fav-list');
+  if (isGuest) {
+    el.innerHTML = `<div class="empty">
+      <span class="ei">&#128274;</span>
+      <p>Sign in to save your favourite devices.<br>
+      <button onclick="openLwall()" style="margin-top:.75rem;padding:.5rem 1.25rem;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:var(--font-d);font-weight:800;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase">Sign In / Sign Up</button></p>
+    </div>`;
+    return;
+  }
+  const list = DEVS.filter(d => favs.includes(d.id));
+  if (!list.length) {
+    el.innerHTML='<div class="empty"><span class="ei">&#128148;</span><p>No saved devices yet.<br>Tap the heart on any device to save it.</p></div>';
+    return;
+  }
+  el.innerHTML = list.map(d => `
+    <div class="dc" onclick="openModal('${d.id}')">
+      <div class="dc-thumb">${d.ico}</div>
+      <div>
+        <div class="dc-name">${d.name}</div>
+        <div class="dc-tag">${d.tag}</div>
+        <div class="dc-specs">
+          ${Object.entries(d.specs).slice(0,3).map(([,v])=>`<span class="spec-pill">${v}</span>`).join('')}
+        </div>
+      </div>
+      <div class="dc-r">
+        <div class="dc-price">${d.ps}</div>
+        <div class="dc-rat">&#9733; ${d.rat}</div>
+        <button class="fav-btn faved" onclick="toggleFav(event,'${d.id}')">&#10084;</button>
+        <a class="buy-lnk" href="${d.amz}" target="_blank" onclick="event.stopPropagation()">Buy</a>
+      </div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   MODAL
+════════════════════════════════════════ */
+function openModal(id) {
+  const d = DEVS.find(x => x.id===id); if (!d) return;
+  const cat = CATS.find(c => c.id===d.cat);
+  const isFaved = favs.includes(id);
+  document.getElementById('modal-body').innerHTML = `
+    <div class="m-head">
+      <div class="m-ico">${d.ico}</div>
+      <div>
+        <div class="m-name">${d.name}</div>
+        <div class="m-brand">${d.brand}&nbsp;&middot;&nbsp;${cat?cat.name:''}</div>
+        <div class="m-price">${d.ps}</div>
+      </div>
+    </div>
+    <div class="rb-wrap">
+      <div class="rb-lbl"><span>User Rating</span><span>&#9733; ${d.rat} / 5</span></div>
+      <div class="rb"><div class="rb-fill" id="rb-${id}" style="width:0%"></div></div>
+    </div>
+    <div class="spec-g">
+      ${Object.entries(d.specs).map(([k,v])=>`
+        <div class="si"><div class="si-l">${k}</div><div class="si-v">${v}</div></div>`).join('')}
+    </div>
+    <div class="m-btns">
+      <button class="m-fav" id="mfav-${id}" onclick="modalFav('${id}')">
+        ${isFaved ? '&#10084; Saved' : '&#9825; Save'}
+      </button>
+      <div class="m-buy-wrap">
+        <a class="m-buy amz" href="${d.amz}" target="_blank">Amazon &#8594;</a>
+        <a class="m-buy flp" href="${d.flp}" target="_blank">Flipkart &#8594;</a>
+      </div>
+    </div>`;
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => {
+    const rb = document.getElementById('rb-'+id);
+    if (rb) rb.style.width = (d.rat/5*100) + '%';
+  }, 350);
+}
+
+function maybeCloseModal(e) {
+  if (e.target===document.getElementById('overlay'))
+    document.getElementById('overlay').classList.remove('open');
+}
+
+function modalFav(id) {
+  // Guest → show login wall
+  if (isGuest) {
+    document.getElementById('overlay').classList.remove('open');
+    openLwall();
+    return;
+  }
+  if (favs.includes(id)) favs = favs.filter(f=>f!==id);
+  else favs.push(id);
+  localStorage.setItem('sp_favs', JSON.stringify(favs));
+  const btn = document.getElementById('mfav-'+id);
+  if (btn) btn.innerHTML = favs.includes(id) ? '&#10084; Saved' : '&#9825; Save';
+  toast(favs.includes(id) ? 'Saved to favourites' : 'Removed from saved');
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+let _tt;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
